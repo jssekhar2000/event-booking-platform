@@ -32,8 +32,8 @@ It includes full support for:
 ### 1. 📥 Clone the Project
 
 ```bash
-git clone https://github.com/yourusername/event-booking-backend.git
-cd event-booking-backend/server
+git clone https://github.com/jssekhar2000/event-booking-platform.git
+cd server
 ```
 
 ---
