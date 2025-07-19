@@ -176,6 +176,11 @@ EMAIL_PASS=generated_app_password
 
 ---
 
+## Postman Collection
+
+📬 [Click here to download Postman collection](./docs/EventBookingAPI.postman_collection.json)
+
+
 ## 🧠 Notes
 
 - Make sure your PostgreSQL server is running (locally or via Railway)
