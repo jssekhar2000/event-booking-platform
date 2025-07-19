@@ -21,3 +21,32 @@ exports.getAllEvents = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch events' });
   }
 };
+
+exports.getEventById = async (req, res) => {
+    const eventId = parseInt(req.params.id);
+  
+    try {
+      const event = await prisma.event.findUnique({
+        where: { id: eventId },
+        include: {
+          vendor: {
+            include: {
+              user: {
+                select: { name: true, email: true }
+              }
+            }
+          }
+        }
+      });
+  
+      if (!event) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+  
+      res.json(event);
+    } catch (err) {
+      console.error('Get Event By ID Error:', err);
+      res.status(500).json({ message: 'Failed to fetch event details' });
+    }
+  };
+  

@@ -43,6 +43,7 @@ model Event {
   availableTickets Int
   vendor   Vendor   @relation(fields: [vendorId], references: [id])
   bookings Booking[]
+  status String @default("PENDING")
 }
 
 model Booking {
