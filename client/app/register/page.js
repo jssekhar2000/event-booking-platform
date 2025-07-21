@@ -57,7 +57,7 @@ export default function RegisterPage() {
     }
 
     try {
-      const res = await axios.post('/api/auth/register', {
+      const res = await axios.post('/auth/register', {
         name: `${form.firstName} ${form.lastName}`,
         email: form.email,
         password: form.password,
