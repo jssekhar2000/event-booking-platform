@@ -2,13 +2,17 @@
 
 import { useState } from 'react';
 
-export default function HeroSection() {
+export default function HeroSection({ onSearch }) {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [location, setLocation] = useState('');
 
   const handleSearch = () => {
-    console.log({ search, category, location });
+    onSearch({
+      search,
+      category,
+      location
+    });
   };
 
   return (
@@ -23,7 +27,7 @@ export default function HeroSection() {
 
         <div className="bg-white/95 backdrop-blur-md p-6 rounded-xl max-w-4xl mx-auto shadow-lg">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Search input */}
+
             <div className="md:col-span-2 relative">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +49,7 @@ export default function HeroSection() {
               />
             </div>
 
-            {/* Category */}
+
             <div>
               <select
                 value={category}
@@ -62,7 +66,7 @@ export default function HeroSection() {
               </select>
             </div>
 
-            {/* Location */}
+ 
             <div>
               <select
                 value={location}
@@ -80,7 +84,7 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* Search button */}
+
           <div className="flex justify-center mt-6">
             <button
               onClick={handleSearch}

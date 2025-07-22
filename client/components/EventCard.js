@@ -1,6 +1,7 @@
 'use client';
 
 import { Calendar, Clock, MapPin, Users, DollarSign } from 'lucide-react';
+import Link from 'next/link';
 
 export default function EventCard({ event }) {
   return (
@@ -66,15 +67,17 @@ export default function EventCard({ event }) {
           <span>{event.price}</span>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex gap-2 mt-2">
-          <button className="flex-1 border border-gray-300 text-sm rounded-md py-1 font-medium hover:bg-gray-100">
+        <Link href={`/events/${event.id}`} className="flex-1">
+          <button className="w-full border border-gray-300 text-sm rounded-md py-1 font-medium hover:bg-gray-100">
             View Details
           </button>
-          <button className="flex-1 bg-purple-600 text-white text-sm rounded-md py-1 font-medium hover:bg-purple-700 transition">
-            Book Now
-          </button>
-        </div>
+        </Link>
+        
+        <button className="flex-1 bg-purple-600 text-white text-sm rounded-md py-1 font-medium hover:bg-purple-700 transition">
+          Book Now
+        </button>
+      </div>
       </div>
     </div>
   );

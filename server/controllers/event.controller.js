@@ -1,8 +1,20 @@
 const prisma = require('../prisma/client');
 
 exports.getAllEvents = async (req, res) => {
+  const { category, location, search } = req.query;
+
   try {
     const events = await prisma.event.findMany({
+      where: {
+        ...(category && { category: { equals: category, mode: 'insensitive' } }),
+        ...(location && { location: { contains: location, mode: 'insensitive' } }),
+        ...(search && {
+          OR: [
+            { title: { contains: search, mode: 'insensitive' } },
+            { description: { contains: search, mode: 'insensitive' } },
+          ]
+        }),
+      },
       orderBy: { date: 'asc' },
       include: {
         vendor: {
@@ -21,6 +33,7 @@ exports.getAllEvents = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch events' });
   }
 };
+
 
 exports.getEventById = async (req, res) => {
     const eventId = parseInt(req.params.id);
