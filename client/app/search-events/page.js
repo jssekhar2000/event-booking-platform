@@ -1,0 +1,86 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import axios from '@/lib/axios';
+import SearchSidebar from './SearchSideBar';
+import SearchResults from './SearchResults';
+import { categoryImages } from '@/lib/constants';
+import SearchTopBar from './SearchTopBar';
+
+export default function SearchPage() {
+  const [filters, setFilters] = useState({
+    categories: [],
+    locations: [],
+  });
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchFilteredEvents = async () => {
+      setLoading(true);
+      try {
+        const res = await axios.get('/events', {
+          params: {
+            categories: filters.categories.join(','),
+            locations: filters.locations.join(','),
+          },
+        });
+
+        const mapped = res.data.map((event) => {
+          const dateObj = new Date(event.date);
+          return {
+            id: event.id,
+            title: event.title,
+            description: event.description,
+            date: dateObj.toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            }),
+            time: dateObj.toLocaleTimeString('en-US', {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+            category: event.category,
+            venue: event.location,
+            image: categoryImages[event.category] || categoryImages.default,
+            organizer: event.vendor?.vendorName || 'Unknown Organizer',
+            attendees: `${500 - event.availableTickets}/500 attendees`,
+            price: 50 + event.id * 10,
+          };
+        });
+
+        setEvents(mapped);
+      } catch (err) {
+        console.error('Fetch failed', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFilteredEvents();
+  }, [filters]);
+
+  const handleSearch = (searchData) => {
+    setFilters(searchData);
+  };
+
+  return (
+    <>
+  <SearchTopBar onSearch={handleSearch} />
+
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex gap-6">
+    {/* Sidebar */}
+    <SearchSidebar filters={filters} setFilters={setFilters} />
+
+    {/* Event Results */}
+    <div className="flex-1">
+      <h2 className="text-xl font-semibold mb-6">
+        {events.length} events found
+      </h2>
+      <SearchResults events={events} />
+    </div>
+  </div>
+</>
+  );
+}

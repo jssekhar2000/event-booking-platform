@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { eventCategories, eventLocations } from '@/lib/constants';
+
 export default function HeroSection({ onSearch }) {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
@@ -51,36 +53,32 @@ export default function HeroSection({ onSearch }) {
 
 
             <div>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 text-gray-800 bg-white"
-              >
-                <option value="">All Categories</option>
-                <option value="Music">Music</option>
-                <option value="Technology">Technology</option>
-                <option value="Food & Drink">Food & Drink</option>
-                <option value="Arts & Culture">Arts & Culture</option>
-                <option value="Business">Business</option>
-                <option value="Sports">Sports</option>
-              </select>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 text-gray-800 bg-white"
+            >
+              {eventCategories.map((cat) => (
+              <option key={cat.value} value={cat.value}>
+                {cat.label}
+              </option>
+              ))}
+            </select>
             </div>
 
  
             <div>
-              <select
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 text-gray-800 bg-white"
-              >
-                <option value="">All Locations</option>
-                <option value="New York">New York</option>
-                <option value="San Francisco">San Francisco</option>
-                <option value="Los Angeles">Los Angeles</option>
-                <option value="Miami">Miami</option>
-                <option value="Chicago">Chicago</option>
-                <option value="Austin">Austin</option>
-              </select>
+            <select
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 text-gray-800 bg-white"
+            >
+              {eventLocations.map((loc) => (
+                <option key={loc.value} value={loc.value}>
+                  {loc.label}
+                </option>
+              ))}
+            </select>
             </div>
           </div>
 

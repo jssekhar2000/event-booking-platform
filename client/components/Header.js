@@ -20,7 +20,7 @@ export default function Header() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex space-x-6 ml-10">
           <Link href="/" className="text-gray-700 hover:text-purple-600 font-medium">Home</Link>
-          <Link href="/events" className="text-gray-700 hover:text-purple-600 font-medium">Search Events</Link>
+          <Link href="/search-events" className="text-gray-700 hover:text-purple-600 font-medium">Search Events</Link>
         </nav>
 
         {/* Auth Buttons */}

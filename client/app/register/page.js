@@ -5,9 +5,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import axios from '@/lib/axios';
 import { Eye, EyeOff } from 'lucide-react';
-
+import { useAuth } from '@/hooks/useAuth';
 export default function RegisterPage() {
   const router = useRouter();
+  const { login } = useAuth();
 
   const [form, setForm] = useState({
     firstName: '',
@@ -65,10 +66,8 @@ export default function RegisterPage() {
       });
 
       const { token, user } = res.data;
-      localStorage.setItem('token', token);
-      localStorage.setItem('role', user.role);
-
-      router.push(user.role === 'VENDOR' ? '/vendor' : '/user/bookings');
+      login(user, token);
+      router.push('/');
     } catch (err) {
       setErrors([err.response?.data?.message || 'Registration failed']);
     }

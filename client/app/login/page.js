@@ -5,15 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import axios from '@/lib/axios';
 import { Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
 
-  const [form, setForm] = useState({
-    email: '',
-    password: '',
-  });
-
+  const [form, setForm] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState([]);
 
@@ -24,8 +22,8 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const errorList = [];
 
+    const errorList = [];
     if (!form.email) errorList.push('Email is required');
     if (!form.password) errorList.push('Password is required');
 
@@ -41,8 +39,8 @@ export default function LoginPage() {
       });
 
       const { token, user } = res.data;
-      localStorage.setItem('token', token);
-      localStorage.setItem('role', user.role);
+
+      login(user, token);
 
       if (user.role === 'VENDOR') router.push('/vendor');
       else if (user.role === 'ADMIN') router.push('/admin');
@@ -55,7 +53,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        {/* Back to Home */}
+
         <div className="mb-4">
           <Link href="/" className="text-sm text-gray-500 hover:text-purple-600 flex items-center space-x-1">
             <span>&larr;</span>
@@ -68,7 +66,7 @@ export default function LoginPage() {
           Sign in to your EventHub account
         </p>
 
-        {/* Error Box */}
+
         {errors.length > 0 && (
           <div className="bg-red-50 border border-red-300 text-red-700 text-sm p-4 rounded-md space-y-1 mb-4">
             {errors.map((err, idx) => (
@@ -80,8 +78,9 @@ export default function LoginPage() {
           </div>
         )}
 
+
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email */}
+
           <div>
             <label className="text-sm font-medium">Email</label>
             <input
@@ -95,7 +94,7 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Password */}
+
           <div>
             <label className="text-sm font-medium">Password</label>
             <div className="relative">
@@ -116,12 +115,14 @@ export default function LoginPage() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            <Link href="/forgot-password" className="text-xs text-purple-600 mt-1 inline-block hover:underline">
+            <Link
+              href="/forgot-password"
+              className="text-xs text-purple-600 mt-1 inline-block hover:underline"
+            >
               Forgot password?
             </Link>
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             className="w-full bg-purple-600 text-white font-semibold py-2 rounded-md hover:bg-purple-700 transition"
@@ -130,7 +131,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Quick demo access - optional */}
+
         <div className="mt-6 text-center space-x-2">
           <button
             onClick={() => setForm({ email: 'user@demo.com', password: '123456' })}
@@ -152,7 +153,7 @@ export default function LoginPage() {
           </button>
         </div>
 
-        {/* Switch to register */}
+
         <p className="text-sm text-center text-gray-500 mt-6">
           Don’t have an account?{' '}
           <Link href="/register" className="text-purple-600 font-medium hover:underline">

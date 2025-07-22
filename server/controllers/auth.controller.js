@@ -14,7 +14,9 @@ exports.register = async (req, res) => {
       });
   
       const token = generateToken(user);
-      res.status(201).json({ token, user });
+      const { password: _, ...userWithoutPassword } = user;
+
+      res.status(201).json({ token, user: userWithoutPassword });
     } catch (err) {
         console.error(err);
       res.status(500).json({ message: 'Registration failed' });
