@@ -11,9 +11,8 @@ export default function SearchTopBar({ onSearch }) {
   };
 
   return (
-    <div className="bg-white py-4 px-4 sm:px-6 lg:px-8 border-b">
-      <form
-        onSubmit={handleSubmit}
+    <div className="bg-white py-4 px-4 sm:px-6 lg:px-8 border-b border-gray-200">
+      <div
         className="max-w-4xl mx-auto flex items-center gap-4"
       >
         <div className="relative flex-grow">
@@ -22,6 +21,11 @@ export default function SearchTopBar({ onSearch }) {
             placeholder="Search events..."
             value={text}
             onChange={(e) => setText(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleSubmit(e);
+              }
+            }}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:outline-none text-gray-800 placeholder-gray-500"
           />
           <svg
@@ -38,12 +42,12 @@ export default function SearchTopBar({ onSearch }) {
         </div>
 
         <button
-          type="submit"
+          onClick={handleSubmit}
           className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-md transition"
         >
           Search
         </button>
-      </form>
+      </div>
     </div>
   );
 }

@@ -6,9 +6,11 @@ import EventCard from "@/components/EventCard";
 import Loader from "@/components/Loader";
 import HeroSection from "./HeroSection";
 import { categoryImages } from "@/lib/constants";
+import { useRouter } from "next/navigation";
 
 
 export default function FeaturedEvents() {
+  const router = useRouter();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -88,9 +90,12 @@ export default function FeaturedEvents() {
         </div>
 
         <div className="text-center mt-12">
-          <button className="inline-flex items-center justify-center gap-2 text-sm font-medium border bg-white hover:bg-gray-100 text-gray-800 h-10 rounded-md px-6 transition">
-            View All Events
-          </button>
+        <button 
+          onClick={() => router.push('/search-events')}
+          className="inline-flex items-center justify-center gap-2 text-sm font-medium border border-gray-300 bg-white hover:bg-gray-100 text-gray-800 h-10 rounded-md px-6 transition"
+        >
+          View All Events
+        </button>
         </div>
       </div>
     </>

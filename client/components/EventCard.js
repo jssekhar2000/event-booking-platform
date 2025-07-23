@@ -5,21 +5,22 @@ import Link from 'next/link';
 
 export default function EventCard({ event }) {
   return (
-    <div className="bg-white rounded-xl border overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer group flex flex-col">
-      {/* Event Image */}
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer group flex flex-col">
+
       <div className="relative h-48 overflow-hidden">
         <img
           src={event.image || 'https://source.unsplash.com/400x300/?event'}
           alt={event.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        {/* Status Badge */}
+
+
         <div className="absolute top-3 left-3">
           <span className="bg-green-600 text-white text-xs px-2 py-0.5 rounded-md font-medium">
             Available
           </span>
         </div>
-        {/* Category Badge */}
+
         <div className="absolute top-3 right-3">
           <span className="bg-white/90 text-gray-700 text-xs px-2 py-0.5 rounded-md font-medium">
             {event.category}

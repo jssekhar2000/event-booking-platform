@@ -12,6 +12,7 @@ export default function SearchPage() {
     categories: [],
     locations: [],
   });
+  const [searchText, setSearchText] = useState('');
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -23,6 +24,7 @@ export default function SearchPage() {
           params: {
             categories: filters.categories.join(','),
             locations: filters.locations.join(','),
+            search: searchText, // Add search text to API call
           },
         });
 
@@ -59,28 +61,33 @@ export default function SearchPage() {
     };
 
     fetchFilteredEvents();
-  }, [filters]);
+  }, [filters, searchText]);
 
   const handleSearch = (searchData) => {
-    setFilters(searchData);
+    setSearchText(searchData);
+  };
+
+  const handleFiltersChange = (newFilters) => {
+    setFilters(newFilters);
   };
 
   return (
-    <>
-  <SearchTopBar onSearch={handleSearch} />
+    <div className="min-h-screen bg-gray-50">
+      <SearchTopBar onSearch={handleSearch} />
 
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex gap-6">
-    {/* Sidebar */}
-    <SearchSidebar filters={filters} setFilters={setFilters} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex gap-8">
+        {/* Sidebar */}
+        <SearchSidebar 
+          filters={filters} 
+          setFilters={handleFiltersChange} 
+        />
 
-    {/* Event Results */}
-    <div className="flex-1">
-      <h2 className="text-xl font-semibold mb-6">
-        {events.length} events found
-      </h2>
-      <SearchResults events={events} />
+        {/* Event Results */}
+        <SearchResults 
+          events={events} 
+          loading={loading}
+        />
+      </div>
     </div>
-  </div>
-</>
   );
 }
