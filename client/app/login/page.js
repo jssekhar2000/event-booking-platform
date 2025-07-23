@@ -6,10 +6,12 @@ import { useRouter } from 'next/navigation';
 import axios from '@/lib/axios';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/components/Toast';
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
@@ -42,14 +44,14 @@ export default function LoginPage() {
       const { token, user } = res.data;
 
       login(user, token);
+      showToast('Login successful!', 'success');
 
-      router.push('/')
-
-      // if (user.role === 'VENDOR') router.push('/vendor');
-      // else if (user.role === 'ADMIN') router.push('/admin');
-      // else router.push('/user/bookings');
+      if (user.role === 'VENDOR') router.push('dashboard/vendor');
+      else if (user.role === 'ADMIN') router.push('dashboard/admin');
+      else router.push('dashboard/user');
     } catch (err) {
       setErrors([err.response?.data?.message || 'Login failed']);
+      showToast(err.response?.data?.message || 'Login failed', 'error');
     } finally{
       setLoading(false);
     }

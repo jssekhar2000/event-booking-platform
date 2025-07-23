@@ -27,7 +27,8 @@ exports.bookEvent = async (req, res) => {
     const booking = await prisma.booking.create({
       data: {
         userId,
-        eventId
+        eventId,
+        price: event?.price
       }
     });
 

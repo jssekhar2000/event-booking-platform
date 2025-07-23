@@ -6,9 +6,12 @@ import { useRouter } from 'next/navigation';
 import axios from '@/lib/axios';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/components/Toast';
+
 export default function RegisterPage() {
   const router = useRouter();
   const { login } = useAuth();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState({
     firstName: '',
@@ -17,6 +20,8 @@ export default function RegisterPage() {
     password: '',
     confirmPassword: '',
     role: 'USER',
+    company: '',
+    description: '',
     agree: false,
   });
 
@@ -46,11 +51,16 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errorList = [];
-
     const rules = getPasswordRules();
+
     if (!rules.length) errorList.push('Password must be at least 6 characters');
     if (form.password !== form.confirmPassword) errorList.push('Passwords do not match');
     if (!form.agree) errorList.push('You must agree to the terms and conditions');
+
+    if (form.role === 'VENDOR') {
+      if (!form.company) errorList.push('Company is required for vendors');
+      if (!form.description) errorList.push('Description is required for vendors');
+    }
 
     if (errorList.length > 0) {
       setErrors(errorList);
@@ -63,13 +73,17 @@ export default function RegisterPage() {
         email: form.email,
         password: form.password,
         role: form.role,
+        company: form.company,
+        description: form.description,
       });
 
       const { token, user } = res.data;
       login(user, token);
       router.push('/');
+      showToast('Registration successful!', 'success');
     } catch (err) {
       setErrors([err.response?.data?.message || 'Registration failed']);
+      showToast(err.response?.data?.message || 'Registration failed', 'error');
     }
   };
 
@@ -78,7 +92,6 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-
         <div className="mb-4">
           <Link href="/" className="text-sm text-gray-500 hover:text-purple-600 flex items-center space-x-1">
             <span>&larr;</span>
@@ -87,10 +100,7 @@ export default function RegisterPage() {
         </div>
 
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-1">Create Account</h2>
-        <p className="text-sm text-center text-gray-500 mb-6">
-          Join EventHub and start discovering amazing events
-        </p>
-
+        <p className="text-sm text-center text-gray-500 mb-6">Join EventHub and start discovering amazing events</p>
 
         {errors.length > 0 && (
           <div className="bg-red-50 border border-red-300 text-red-700 text-sm p-4 rounded-md space-y-1 mb-4">
@@ -104,7 +114,6 @@ export default function RegisterPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-
           <div>
             <label className="text-sm font-medium">Account Type</label>
             <select
@@ -117,7 +126,6 @@ export default function RegisterPage() {
               <option value="VENDOR">Event Organizer</option>
             </select>
           </div>
-
 
           <div className="flex gap-4">
             <div className="w-1/2">
@@ -146,6 +154,34 @@ export default function RegisterPage() {
             </div>
           </div>
 
+          {form.role === 'VENDOR' && (
+            <>
+              <div>
+                <label className="text-sm font-medium">Company Name</label>
+                <input
+                  type="text"
+                  name="company"
+                  value={form.company}
+                  onChange={handleChange}
+                  required
+                  placeholder="Your company name"
+                  className="w-full mt-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 placeholder-gray-400"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Company Description</label>
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
+                  required
+                  placeholder="Tell us about your company..."
+                  className="w-full mt-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 placeholder-gray-400"
+                  rows={3}
+                />
+              </div>
+            </>
+          )}
 
           <div>
             <label className="text-sm font-medium">Email</label>
@@ -159,7 +195,6 @@ export default function RegisterPage() {
               className="w-full mt-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 placeholder-gray-400"
             />
           </div>
-
 
           <div>
             <label className="text-sm font-medium">Password</label>
@@ -184,7 +219,6 @@ export default function RegisterPage() {
               </button>
             </div>
 
-
             {passwordFocused && (
               <div className="mt-2 text-sm text-gray-600">
                 <p>Password strength:</p>
@@ -206,7 +240,6 @@ export default function RegisterPage() {
             )}
           </div>
 
-  
           <div>
             <label className="text-sm font-medium">Confirm Password</label>
             <div className="relative">
@@ -229,7 +262,6 @@ export default function RegisterPage() {
             </div>
           </div>
 
-
           <div className="flex items-start gap-2">
             <input
               type="checkbox"
@@ -240,12 +272,10 @@ export default function RegisterPage() {
             />
             <label className="text-sm text-gray-600">
               I agree to the{' '}
-              <Link href="#" className="text-purple-600 underline">Terms of Service</Link>{' '}
-              and{' '}
+              <Link href="#" className="text-purple-600 underline">Terms of Service</Link>{' '}and{' '}
               <Link href="#" className="text-purple-600 underline">Privacy Policy</Link>
             </label>
           </div>
-
 
           <button
             type="submit"
