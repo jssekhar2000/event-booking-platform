@@ -28,27 +28,29 @@ export default function SearchPage() {
           },
         });
 
-        const mapped = res.data.map((event) => {
-          const dateObj = new Date(event.date);
+        const mapped = res?.data?.map((event) => {
+          const dateObj = new Date(event?.date);
+          const booked = event.totalTickets - event.availableTickets;
+        
           return {
-            id: event.id,
-            title: event.title,
-            description: event.description,
-            date: dateObj.toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
+            id: event?.id,
+            title: event?.title,
+            shortDescription: event?.shortDescription,
+            date: dateObj.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
             }),
-            time: dateObj.toLocaleTimeString('en-US', {
-              hour: '2-digit',
-              minute: '2-digit',
+            time: dateObj.toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
             }),
             category: event.category,
             venue: event.location,
-            image: categoryImages[event.category] || categoryImages.default,
-            organizer: event.vendor?.vendorName || 'Unknown Organizer',
-            attendees: `${500 - event.availableTickets}/500 attendees`,
-            price: 50 + event.id * 10,
+            image: event.imageUrl || categoryImages[event.category] || categoryImages.default,
+            organizer: event.vendor?.vendorName || "Unknown Organizer",
+            attendees: `${booked}/${event.totalTickets} attendees`,
+            price: event.price,
           };
         });
 
