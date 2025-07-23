@@ -3,16 +3,22 @@
 import { Calendar, Clock, MapPin, Users, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 import BookNowButton from './BookNowButton';
+import { categoryImages } from '@/lib/constants';
+import { useState } from 'react';
 
 export default function EventCard({ event }) {
+  const [imgError, setImgError] = useState(false);
+  const fallbackImage = categoryImages[event?.category] || categoryImages.default
+
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer group flex flex-col">
 
       <div className="relative h-48 overflow-hidden">
         <img
-          src={event.image || 'https://source.unsplash.com/400x300/?event'}
+          src={imgError ? fallbackImage : (event.image || event.imageUrl || fallbackImage)}
           alt={event.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          onError={() => setImgError(true)}
         />
 
 
@@ -34,7 +40,7 @@ export default function EventCard({ event }) {
           <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-700 transition">
             {event.title}
           </h3>
-          <p className="text-sm text-gray-600 line-clamp-2 mt-1">{event.description}</p>
+          <p className="text-sm text-gray-600 line-clamp-2 mt-1">{event.shortDescription}</p>
         </div>
 
         <div className="space-y-2 text-sm text-gray-600">

@@ -31,12 +31,14 @@ export default function FeaturedEvents() {
           }
         });
   
-        const mapped = res.data.map((event) => {
-          const dateObj = new Date(event.date);
+        const mapped = res?.data?.map((event) => {
+          const dateObj = new Date(event?.date);
+          const booked = event.totalTickets - event.availableTickets;
+        
           return {
-            id: event.id,
-            title: event.title,
-            description: event.description,
+            id: event?.id,
+            title: event?.title,
+            shortDescription: event?.shortDescription,
             date: dateObj.toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -48,10 +50,10 @@ export default function FeaturedEvents() {
             }),
             category: event.category,
             venue: event.location,
-            image: categoryImages[event.category] || categoryImages.default,
+            image: event.imageUrl || categoryImages[event.category] || categoryImages.default,
             organizer: event.vendor?.vendorName || "Unknown Organizer",
-            attendees: `${500 - event.availableTickets}/500 attendees`,
-            price: 50 + event.id * 10,
+            attendees: `${booked}/${event.totalTickets} attendees`,
+            price: event.price,
           };
         });
   
