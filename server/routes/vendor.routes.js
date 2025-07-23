@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticate, authorizeRoles } = require('../middlewares/auth.middleware');
-const { createEvent, getVendorEvents, updateEvent, deleteEvent } = require('../controllers/vendor.controller');
+const { createEvent, getVendorEvents, updateEvent, deleteEvent, getVendorDashboard } = require('../controllers/vendor.controller');
 
 router.post(
   '/events',
@@ -30,5 +30,13 @@ router.delete(
   authorizeRoles('VENDOR'),
   deleteEvent
 );
+
+router.get(
+  '/dashboard',
+  authenticate,
+  authorizeRoles('VENDOR'),
+  getVendorDashboard
+);
+
 
 module.exports = router;

@@ -3,25 +3,41 @@ const prisma = require('../prisma/client');
 const { generateToken } = require('../utils/jwt');
 
 exports.register = async (req, res) => {
-    const { name, email, password, role } = req.body;
-    try {
-      const exists = await prisma.user.findUnique({ where: { email } });
-      if (exists) return res.status(400).json({ message: 'User already exists' });
-  
-      const hashed = await bcrypt.hash(password, 10);
-      const user = await prisma.user.create({
-        data: { name, email, password: hashed, role },
-      });
-  
-      const token = generateToken(user);
-      const { password: _, ...userWithoutPassword } = user;
+  const { name, email, password, role, company, description } = req.body;
 
-      res.status(201).json({ token, user: userWithoutPassword });
-    } catch (err) {
-        console.error(err);
-      res.status(500).json({ message: 'Registration failed' });
+  try {
+    const exists = await prisma.user.findUnique({ where: { email } });
+    if (exists) return res.status(400).json({ message: 'User already exists' });
+
+    const hashed = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashed,
+        role
+      },
+    });
+
+    if (role === 'VENDOR') {
+      await prisma.vendor.create({
+        data: {
+          userId: user.id,
+          vendorName: company,
+          description: description,
+        },
+      });
     }
-  };
+    const token = generateToken(user);
+    const { password: _, ...userWithoutPassword } = user;
+
+    res.status(201).json({ token, user: userWithoutPassword });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Registration failed' });
+  }
+};
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;

@@ -133,5 +133,52 @@ exports.deleteEvent = async (req, res) => {
   }
 };
 
+exports.getVendorDashboard = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const vendor = await prisma.vendor.findUnique({
+      where: { userId },
+    });
+
+    if (!vendor) {
+      return res.status(404).json({ message: 'Vendor profile not found' });
+    }
+
+    const [totalEvents, totalBookings, totalRevenue] = await Promise.all([
+      prisma.event.count({
+        where: { vendorId: vendor.id },
+      }),
+      prisma.booking.count({
+        where: {
+          event: {
+            vendorId: vendor.id,
+          },
+        },
+      }),
+      prisma.booking.aggregate({
+        _sum: {
+          price: true,
+        },
+        where: {
+          event: {
+            vendorId: vendor.id,
+          },
+        },
+      }),
+    ]);
+
+    res.json({
+      totalEvents,
+      totalBookings,
+      totalRevenue: totalRevenue._sum.price || 0,
+    });
+  } catch (err) {
+    console.error('Vendor Dashboard Error:', err);
+    res.status(500).json({ message: 'Failed to fetch dashboard data' });
+  }
+};
+
+
 
 
