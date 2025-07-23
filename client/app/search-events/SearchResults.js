@@ -3,10 +3,11 @@
 import EventCard from '@/components/EventCard';
 import { Grid, List, ChevronDown, ArrowUpDown } from 'lucide-react';
 import { useState } from 'react';
+import Loader from '@/components/Loader';
 
-export default function SearchResults({ events }) {
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
-  const [sortBy, setSortBy] = useState('date'); // 'date', 'price', 'title'
+export default function SearchResults({ events, loading }) {
+  const [viewMode, setViewMode] = useState('grid');
+  const [sortBy, setSortBy] = useState('date');
   const [showSortDropdown, setShowSortDropdown] = useState(false);
 
   const sortOptions = [
@@ -20,6 +21,58 @@ export default function SearchResults({ events }) {
   const getCurrentSortLabel = () => {
     return sortOptions.find(option => option.value === sortBy)?.label || 'Date';
   };
+
+
+  if (loading) {
+    return (
+      <div className="flex-1">
+        <div className="bg-white border-b border-gray-200 pb-4 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex flex-col gap-2">
+              <h1 className="text-2xl font-bold text-gray-900">
+                Search Results
+              </h1>
+              <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full w-fit">
+                Searching...
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <button
+                  disabled
+                  className="flex items-center gap-2 px-4 py-2 w-48 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-lg cursor-not-allowed"
+                >
+                  <ArrowUpDown className="w-4 h-4 text-gray-400" />
+                  <span className="flex-1 text-left">{getCurrentSortLabel()}</span>
+                  <ChevronDown className="w-4 h-4 text-gray-300" />
+                </button>
+              </div>
+
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <button
+                  disabled
+                  className="flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-400 shadow-sm cursor-not-allowed"
+                >
+                  <Grid className="w-4 h-4" />
+                </button>
+                <button
+                  disabled
+                  className="flex items-center justify-center w-8 h-8 rounded-md text-gray-400 cursor-not-allowed"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center min-h-96">
+          <Loader />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1">

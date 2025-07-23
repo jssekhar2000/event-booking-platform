@@ -2,6 +2,7 @@
 
 import { Calendar, Clock, MapPin, Users, DollarSign } from 'lucide-react';
 import Link from 'next/link';
+import BookNowButton from './BookNowButton';
 
 export default function EventCard({ event }) {
   return (
@@ -75,9 +76,10 @@ export default function EventCard({ event }) {
           </button>
         </Link>
         
-        <button className="flex-1 bg-purple-600 text-white text-sm rounded-md py-1 font-medium hover:bg-purple-700 transition">
+        {/* <button className="flex-1 bg-purple-600 text-white text-sm rounded-md py-1 font-medium hover:bg-purple-700 transition">
           Book Now
-        </button>
+        </button> */}
+        <BookNowButton />
       </div>
       </div>
     </div>

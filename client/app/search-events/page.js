@@ -24,7 +24,7 @@ export default function SearchPage() {
           params: {
             categories: filters.categories.join(','),
             locations: filters.locations.join(','),
-            search: searchText, // Add search text to API call
+            search: searchText,
           },
         });
 
@@ -54,7 +54,7 @@ export default function SearchPage() {
 
         setEvents(mapped);
       } catch (err) {
-        console.error('Fetch failed', err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -71,18 +71,16 @@ export default function SearchPage() {
     setFilters(newFilters);
   };
 
+
   return (
     <div className="min-h-screen bg-gray-50">
       <SearchTopBar onSearch={handleSearch} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex gap-8">
-        {/* Sidebar */}
         <SearchSidebar 
           filters={filters} 
           setFilters={handleFiltersChange} 
         />
-
-        {/* Event Results */}
         <SearchResults 
           events={events} 
           loading={loading}

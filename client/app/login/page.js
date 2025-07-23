@@ -14,6 +14,7 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState([]);
+  const [loading,setLoading] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,7 +32,7 @@ export default function LoginPage() {
       setErrors(errorList);
       return;
     }
-
+    setLoading(true)
     try {
       const res = await axios.post('/auth/login', {
         email: form.email,
@@ -42,11 +43,15 @@ export default function LoginPage() {
 
       login(user, token);
 
-      if (user.role === 'VENDOR') router.push('/vendor');
-      else if (user.role === 'ADMIN') router.push('/admin');
-      else router.push('/user/bookings');
+      router.push('/')
+
+      // if (user.role === 'VENDOR') router.push('/vendor');
+      // else if (user.role === 'ADMIN') router.push('/admin');
+      // else router.push('/user/bookings');
     } catch (err) {
       setErrors([err.response?.data?.message || 'Login failed']);
+    } finally{
+      setLoading(false);
     }
   };
 
@@ -125,9 +130,16 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full bg-purple-600 text-white font-semibold py-2 rounded-md hover:bg-purple-700 transition"
+            disabled={loading}
+            className={`w-full ${loading ? 'bg-gray-500' : 'bg-purple-600'} text-white font-semibold py-2 rounded-md hover:bg-purple-700 transition`}
           >
-            Sign in
+            {loading ? (
+              <div className="flex justify-center items-center">
+                <div className="w-4 h-4 border-t-2 border-white border-solid rounded-full animate-spin"></div>
+              </div>
+            ) : (
+              'Sign in'
+            )}
           </button>
         </form>
 

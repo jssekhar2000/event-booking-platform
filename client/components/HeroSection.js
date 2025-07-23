@@ -4,10 +4,10 @@ import { useState } from 'react';
 
 import { eventCategories, eventLocations } from '@/lib/constants';
 
-export default function HeroSection({ onSearch }) {
+export default function HeroSection({ onSearch}) {
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('');
-  const [location, setLocation] = useState('');
+  const [category, setCategory] = useState(eventCategories[0]?.value || '');
+  const [location, setLocation] = useState(eventLocations[0]?.value || '');
 
   const handleSearch = () => {
     onSearch({
