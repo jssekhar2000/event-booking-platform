@@ -20,13 +20,7 @@ import {
 import EventDetailsSideBar from '@/components/EventDetailsSideBar';
 import ShareModal from '@/components/ShareModal';
 import Loader from '@/components/Loader';
-
-const categoryImages = {
-  Tech: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800',
-  Music: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800',
-  Festival: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800',
-  default: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800',
-};
+import { categoryImages } from '@/lib/constants';
 
 export default function EventDetailsPage() {
   const { id } = useParams();
@@ -59,7 +53,6 @@ export default function EventDetailsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Back to Events Button */}
       <div className="mb-6">
         <button className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,9 +63,7 @@ export default function EventDetailsPage() {
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Image Card */}
           <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
             <div className="relative">
               <img
@@ -80,11 +71,9 @@ export default function EventDetailsPage() {
                 alt={event.title}
                 className="w-full h-80 object-cover"
               />
-              {/* Category Badge */}
               <span className="absolute top-6 left-6 bg-purple-600 text-white text-sm font-medium px-4 py-2 rounded-full">
                 {event.category}
               </span>
-              {/* Action Buttons */}
               <div className="absolute top-6 right-6 flex gap-3">
                 <button
                   onClick={() => setLiked(!liked)}
@@ -106,10 +95,7 @@ export default function EventDetailsPage() {
                 </button>
               </div>
             </div>
-            
-            {/* Content Section */}
             <div className="p-8">
-              {/* Title and Rating in One Row */}
               <div className="flex justify-between items-start mb-6">
                 <h1 className="text-3xl font-bold text-gray-900">{event.title}</h1>
                 <div className="flex items-center gap-2">
@@ -120,8 +106,6 @@ export default function EventDetailsPage() {
                   <span className="text-gray-500">({324} reviews)</span>
                 </div>
               </div>
-
-              {/* Date and Location in One Row */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <Calendar className="w-5 h-5 text-gray-400" />
@@ -156,27 +140,22 @@ export default function EventDetailsPage() {
                 </div>
               </div>
 
-              {/* Tags */}
               <div className="flex flex-wrap gap-2 mb-6">
                 <span className="bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-full">Music</span>
                 <span className="bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-full">Festival</span>
                 <span className="bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-full">Outdoor</span>
                 <span className="bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-full">Multiple Stages</span>
               </div>
-
-              {/* Description */}
               <div>
                 <p className="text-gray-700 leading-relaxed text-base">{event.description}</p>
               </div>
             </div>
           </div>
 
-          {/* Event Details Info Card */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
             <h3 className="font-semibold text-xl mb-6">Event Details</h3>
             
             <div className="grid md:grid-cols-2 gap-8">
-              {/* Amenities */}
               <div>
                 <h4 className="font-semibold text-lg text-gray-900 mb-4">Amenities</h4>
                 <ul className="space-y-3">
@@ -202,8 +181,6 @@ export default function EventDetailsPage() {
                   </li>
                 </ul>
               </div>
-
-              {/* Important Information */}
               <div>
                 <h4 className="font-semibold text-lg text-gray-900 mb-4">Important Information</h4>
                 <div className="space-y-4">
@@ -223,8 +200,6 @@ export default function EventDetailsPage() {
               </div>
             </div>
           </div>
-
-          {/* Organizer Info */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
             <h3 className="font-semibold text-xl mb-6">About the Organizer</h3>
             <div className="flex items-start gap-4">
@@ -244,8 +219,6 @@ export default function EventDetailsPage() {
 
         <EventDetailsSideBar event={event} />
       </div>
-
-      {/* Share Modal */}
       <ShareModal 
         isOpen={showShareModal} 
         onClose={() => setShowShareModal(false)} 

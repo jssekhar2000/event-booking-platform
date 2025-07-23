@@ -1,74 +1,111 @@
 'use client';
 
 import Link from 'next/link';
-import { Calendar, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+import { Calendar, User } from 'lucide-react';
 
 export default function Header() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
+
+  const isActive = (path) => pathname === path;
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+    <header className="bg-white shadow-sm sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
 
-        {/* Logo & Title */}
         <Link href="/" className="flex items-center space-x-2">
-          <Calendar className="h-8 w-8 text-purple-600" />
+          <Calendar className="h-7 w-7 text-purple-600" />
           <span className="text-xl font-bold text-gray-800">EventHub</span>
         </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex space-x-6 ml-10">
-          <Link href="/" className="text-gray-700 hover:text-purple-600 font-medium">Home</Link>
-          <Link href="/search-events" className="text-gray-700 hover:text-purple-600 font-medium">Search Events</Link>
+        <nav className="flex gap-6 text-sm font-medium items-center">
+          <Link
+            href="/"
+            className={isActive('/') ? 'text-purple-600' : 'text-gray-700 hover:text-purple-600'}
+          >
+            Home
+          </Link>
+          <Link
+            href="/search-events"
+            className={isActive('/search-events') ? 'text-purple-600' : 'text-gray-700 hover:text-purple-600'}
+          >
+            Search Events
+          </Link>
+
+          {user?.role === 'VENDOR' && (
+            <Link
+              href="/dashboard/vendor"
+              className={isActive('/dashboard/vendor') ? 'text-purple-600' : 'text-gray-700 hover:text-purple-600'}
+            >
+              Vendor Dashboard
+            </Link>
+          )}
+          {user?.role === 'ADMIN' && (
+            <Link
+              href="/dashboard/admin"
+              className={isActive('/dashboard/admin') ? 'text-purple-600' : 'text-gray-700 hover:text-purple-600'}
+            >
+              Admin Dashboard
+            </Link>
+          )}
+          {user?.role === 'USER' && (
+            <Link
+              href="/dashboard/user"
+              className={isActive('/dashboard/user') ? 'text-purple-600' : 'text-gray-700 hover:text-purple-600'}
+            >
+              My Bookings
+            </Link>
+          )}
         </nav>
 
-        {/* Auth Buttons */}
-        <div className="hidden md:flex items-center space-x-4">
-          <Link href="/login" className="text-gray-700 hover:text-purple-600 font-medium">Log In</Link>
-          <Link
-            href="/register"
-            className="bg-purple-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-purple-700 transition"
-          >
-            Sign Up
-          </Link>
-        </div>
-
-        {/* Mobile Hamburger */}
-        <div className="md:hidden">
-          <button onClick={() => setMenuOpen(true)} aria-label="Open Menu">
-            <Menu className="h-6 w-6 text-gray-700" />
-          </button>
+        <div className="flex items-center gap-4 text-sm">
+          {user ? (
+            <>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+                  <User className="h-4 w-4 text-white" />
+                </div>
+                <span className="text-gray-700 font-medium">{user?.name}</span>
+              </div>
+              <Link
+                href="/profile"
+                className={isActive('/profile') ? 'text-purple-600' : 'text-gray-700 hover:text-purple-600'}
+              >
+                Profile
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="text-gray-700 hover:text-red-500 transition"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className={isActive('/login') ? 'text-purple-600' : 'text-gray-700 hover:text-purple-600'}
+              >
+                Log In
+              </Link>
+              <Link
+                href="/register"
+                className="bg-purple-600 text-white px-4 py-1.5 rounded-md hover:bg-purple-700 transition"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
       </div>
-
-      {/* Mobile Slide-in Menu */}
-      {menuOpen && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-40" onClick={() => setMenuOpen(false)}>
-          <div
-            className="fixed top-0 right-0 w-64 h-full bg-white shadow-lg p-6 flex flex-col space-y-4"
-            onClick={(e) => e.stopPropagation()} // prevent closing on inner click
-          >
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-lg font-bold text-gray-800">Menu</span>
-              <button onClick={() => setMenuOpen(false)} aria-label="Close Menu">
-                <X className="h-6 w-6 text-gray-700" />
-              </button>
-            </div>
-
-            <Link href="/" className="text-purple-700 font-semibold">Home</Link>
-            <Link href="/events" className="text-gray-700">Search Events</Link>
-            <hr />
-            <Link href="/login" className="text-gray-700">Log In</Link>
-            <Link
-              href="/register"
-              className="bg-purple-600 text-white text-center py-2 rounded-md hover:bg-purple-700 font-medium"
-            >
-              Sign Up
-            </Link>
-          </div>
-        </div>
-      )}
     </header>
   );
 }

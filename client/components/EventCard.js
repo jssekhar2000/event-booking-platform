@@ -29,9 +29,7 @@ export default function EventCard({ event }) {
         </div>
       </div>
 
-      {/* Card Content */}
       <div className="p-4 flex flex-col gap-3 flex-grow">
-        {/* Title & Description */}
         <div>
           <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-700 transition">
             {event.title}
@@ -39,7 +37,6 @@ export default function EventCard({ event }) {
           <p className="text-sm text-gray-600 line-clamp-2 mt-1">{event.description}</p>
         </div>
 
-        {/* Event Details */}
         <div className="space-y-2 text-sm text-gray-600">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
@@ -63,7 +60,6 @@ export default function EventCard({ event }) {
           </div>
         </div>
 
-        {/* Price */}
         <div className="flex items-center gap-1 text-purple-700 font-semibold text-sm">
           <DollarSign className="h-4 w-4" />
           <span>{event.price}</span>
@@ -75,11 +71,8 @@ export default function EventCard({ event }) {
             View Details
           </button>
         </Link>
-        
-        {/* <button className="flex-1 bg-purple-600 text-white text-sm rounded-md py-1 font-medium hover:bg-purple-700 transition">
-          Book Now
-        </button> */}
-        <BookNowButton />
+
+        <BookNowButton eventId={event.id} />
       </div>
       </div>
     </div>

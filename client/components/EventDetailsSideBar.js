@@ -1,11 +1,10 @@
 import { MapPin, Users } from 'lucide-react';
+import BookNowButton from './BookNowButton';
 
 export default function EventSidebar({ event }) {
   return (
     <div className="space-y-6 w-full">
-      {/* Pricing Card */}
       <div className="bg-white border rounded-xl shadow-sm p-6 text-center space-y-4">
-        {/* Price */}
         <div>
           <div className="flex justify-center items-center space-x-2">
             <span className="text-2xl font-bold text-purple-600">${event?.price || 75}</span>
@@ -14,7 +13,6 @@ export default function EventSidebar({ event }) {
           <p className="text-sm text-gray-500">per person</p>
         </div>
 
-        {/* Availability */}
         <div className="flex justify-between text-sm text-gray-600">
           <span>Availability</span>
           <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-medium">
@@ -22,7 +20,6 @@ export default function EventSidebar({ event }) {
           </span>
         </div>
 
-        {/* Attendees */}
         <div className="flex justify-between text-sm text-gray-600">
           <span>Current Attendees</span>
           <span className="flex items-center gap-1">
@@ -31,15 +28,11 @@ export default function EventSidebar({ event }) {
           </span>
         </div>
 
-        {/* Book Button */}
-        <button className="w-full bg-purple-600 text-white rounded-md py-2 font-semibold hover:bg-purple-700 transition">
-          Book Now
-        </button>
+        <BookNowButton eventId={event?.id} fullWidth />
 
         <p className="text-xs text-gray-500">Free cancellation up to 24 hours before the event</p>
       </div>
 
-      {/* Location Card */}
       <div className="bg-white border rounded-xl shadow-sm p-6 space-y-4">
         <h4 className="text-sm font-semibold">Location</h4>
 
