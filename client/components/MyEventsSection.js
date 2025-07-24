@@ -5,8 +5,12 @@ import { Plus, Search, Filter } from 'lucide-react';
 import VendorEventCard from './VendorEventCard';
 import DeleteEventModal from './DeleteEventModal';
 import axios from '@/lib/axios';
+import { useToast } from './Toast';
+import Link from 'next/link';
+import { useDebounce } from '../hooks/useDebounce';
 
 export default function MyEventsSection() {
+  const { showToast } = useToast();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -19,9 +23,11 @@ export default function MyEventsSection() {
   });
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, event: null });
 
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
   useEffect(() => {
     fetchEvents(true);
-  }, [searchTerm, statusFilter]);
+  }, [debouncedSearchTerm, statusFilter]);
 
   const fetchEvents = async (reset = false) => {
     try {
@@ -35,13 +41,12 @@ export default function MyEventsSection() {
       const params = {
         page: reset ? 1 : pagination.currentPage + 1,
         limit: 6,
-        ...(searchTerm && { search: searchTerm }),
+        ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
         ...(statusFilter && { status: statusFilter })
       };
 
       const response = await axios.get('/vendor/events', { params });
       const { events: newEvents = [], currentPage, totalPages, total } = response.data;
-
       if (reset) {
         setEvents(newEvents || []);
       } else {
@@ -53,16 +58,12 @@ export default function MyEventsSection() {
         totalPages: totalPages || 1,
         total: total || 0
       });
-    } catch (error) {
-      console.error('Error fetching events:', error);
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to fetch events', 'error');
     } finally {
       setLoading(false);
       setLoadingMore(false);
     }
-  };
-
-  const handleEdit = (event) => {
-    window.location.href = `/vendor/events/${event.id}/edit`;
   };
 
   const handleDelete = (event) => {
@@ -75,8 +76,9 @@ export default function MyEventsSection() {
       setEvents(prev => prev.filter(event => event.id !== deleteModal.event.id));
       setPagination(prev => ({ ...prev, total: Math.max(0, prev.total - 1) }));
       setDeleteModal({ isOpen: false, event: null });
+      showToast('Event deleted successfully', 'success');
     } catch (error) {
-      console.error('Error deleting event:', error);
+      showToast('Failed to delete event', 'error');
     }
   };
 
@@ -113,14 +115,15 @@ export default function MyEventsSection() {
     <div className="mt-8">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
         <h2 className="text-2xl font-bold text-gray-900">My Events</h2>
-        
-        <button
-          onClick={() => window.location.href = '/vendor/events/create'}
-          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Event
-        </button>
+
+        <Link href="/add-event">
+          <button
+            className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Add Event
+          </button>
+        </Link>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -131,10 +134,10 @@ export default function MyEventsSection() {
             placeholder="Search events..."
             value={searchTerm}
             onChange={handleSearchChange}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
           />
         </div>
-        
+
         <div className="relative">
           <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <select
@@ -181,7 +184,6 @@ export default function MyEventsSection() {
               <VendorEventCard
                 key={event.id}
                 event={event}
-                onEdit={handleEdit}
                 onDelete={handleDelete}
               />
             ))}

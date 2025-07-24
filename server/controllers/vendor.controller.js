@@ -236,9 +236,16 @@ exports.getVendorDashboard = async (req, res) => {
       return res.status(404).json({ message: 'Vendor profile not found' });
     }
 
-    const [totalEvents, totalBookings, totalRevenue] = await Promise.all([
+    const now = new Date();
+
+    const [activeEvents, totalBookings, totalRevenue] = await Promise.all([
       prisma.event.count({
-        where: { vendorId: vendor.id },
+        where: {
+          vendorId: vendor.id,
+          date: {
+            gte: now,
+          },
+        },
       }),
       prisma.booking.count({
         where: {
@@ -260,7 +267,7 @@ exports.getVendorDashboard = async (req, res) => {
     ]);
 
     res.json({
-      totalEvents,
+      activeEvents,
       totalBookings,
       totalRevenue: totalRevenue._sum.price || 0,
     });

@@ -21,7 +21,7 @@ export default function EventPageClientWrapper({ event }) {
   const [liked, setLiked] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const fallbackImage = categoryImages[event?.category] || categoryImages.default
+  const fallbackImage = categoryImages?.[event?.category] || categoryImages.default
 
   console.log('Event:', event);
 
