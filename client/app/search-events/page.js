@@ -11,10 +11,18 @@ export default function SearchPage() {
   const [filters, setFilters] = useState({
     categories: [],
     locations: [],
+    dateRange: 'all',
+    sortBy: 'date'
   });
   const [searchText, setSearchText] = useState('');
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalEvents: 0,
+    eventsPerPage: 6
+  });
 
   useEffect(() => {
     const fetchFilteredEvents = async () => {
@@ -25,10 +33,14 @@ export default function SearchPage() {
             categories: filters.categories.join(','),
             locations: filters.locations.join(','),
             search: searchText,
+            dateRange: filters.dateRange,
+            sortBy: filters.sortBy,
+            page: pagination.currentPage,
+            limit: pagination.eventsPerPage,
           },
         });
 
-        const mapped = res?.data?.map((event) => {
+        const mapped = res?.data?.events?.map((event) => {
           const dateObj = new Date(event?.date);
           const booked = event.totalTickets - event.availableTickets;
         
@@ -52,27 +64,39 @@ export default function SearchPage() {
             attendees: `${booked}/${event.totalTickets} attendees`,
             price: event.price,
           };
-        });
+        }) || [];
 
         setEvents(mapped);
+        setPagination(prev => ({
+          ...prev,
+          totalPages: res?.data?.totalPages || 1,
+          totalEvents: res?.data?.totalEvents || 0
+        }));
       } catch (err) {
         console.error(err);
+        setEvents([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchFilteredEvents();
-  }, [filters, searchText]);
+  }, [filters, searchText, pagination.currentPage]);
 
   const handleSearch = (searchData) => {
     setSearchText(searchData);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
   };
 
   const handleFiltersChange = (newFilters) => {
     setFilters(newFilters);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
   };
 
+  const handlePageChange = (newPage) => {
+    setPagination(prev => ({ ...prev, currentPage: newPage }));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -86,6 +110,10 @@ export default function SearchPage() {
         <SearchResults 
           events={events} 
           loading={loading}
+          pagination={pagination}
+          onPageChange={handlePageChange}
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
         />
       </div>
     </div>

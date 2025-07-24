@@ -37,78 +37,87 @@ const dateOptions = [
 ];
 
 export default function SearchSidebar({ filters, setFilters }) {
-  // Individual state for each filter
   const [selectedCategories, setSelectedCategories] = useState(filters?.categories || []);
   const [selectedLocations, setSelectedLocations] = useState(filters?.locations || []);
   const [priceRange, setPriceRange] = useState(500);
-  const [dateRange, setDateRange] = useState('all');
+  const [dateRange, setDateRange] = useState(filters?.dateRange || 'all');
   const [selectedRating, setSelectedRating] = useState('');
 
-  // Sync with parent filters prop
   useEffect(() => {
     if (filters) {
       setSelectedCategories(filters.categories || []);
       setSelectedLocations(filters.locations || []);
+      setDateRange(filters.dateRange || 'all');
     }
   }, [filters]);
 
-  // Handle category changes
   const handleCategoryChange = (categoryValue) => {
     const updatedCategories = selectedCategories.includes(categoryValue)
       ? selectedCategories.filter(cat => cat !== categoryValue)
       : [...selectedCategories, categoryValue];
     
     setSelectedCategories(updatedCategories);
-    updateParentFilters({ categories: updatedCategories, locations: selectedLocations });
+    updateParentFilters({ 
+      categories: updatedCategories, 
+      locations: selectedLocations,
+      dateRange: dateRange,
+      sortBy: filters?.sortBy || 'date'
+    });
   };
 
-  // Handle location changes
   const handleLocationChange = (locationValue) => {
     const updatedLocations = selectedLocations.includes(locationValue)
       ? selectedLocations.filter(loc => loc !== locationValue)
       : [...selectedLocations, locationValue];
     
     setSelectedLocations(updatedLocations);
-    updateParentFilters({ categories: selectedCategories, locations: updatedLocations });
+    updateParentFilters({ 
+      categories: selectedCategories, 
+      locations: updatedLocations,
+      dateRange: dateRange,
+      sortBy: filters?.sortBy || 'date'
+    });
   };
 
-  // Handle price range changes
   const handlePriceRangeChange = (newPrice) => {
     setPriceRange(newPrice);
-    // You can add price filtering logic here when needed
   };
 
-  // Handle date range changes
   const handleDateRangeChange = (newDateRange) => {
     setDateRange(newDateRange);
-    // You can add date filtering logic here when needed
+    updateParentFilters({ 
+      categories: selectedCategories, 
+      locations: selectedLocations,
+      dateRange: newDateRange,
+      sortBy: filters?.sortBy || 'date'
+    });
   };
 
-  // Handle rating changes
   const handleRatingChange = (ratingValue) => {
     const newRating = selectedRating === ratingValue ? '' : ratingValue;
     setSelectedRating(newRating);
-    // You can add rating filtering logic here when needed
   };
 
-  // Update parent component filters
   const updateParentFilters = (newFilters) => {
     if (setFilters) {
       setFilters(newFilters);
     }
   };
 
-  // Clear all filters
   const clearAllFilters = () => {
     setSelectedCategories([]);
     setSelectedLocations([]);
     setPriceRange(500);
     setDateRange('all');
     setSelectedRating('');
-    updateParentFilters({ categories: [], locations: [] });
+    updateParentFilters({ 
+      categories: [], 
+      locations: [], 
+      dateRange: 'all',
+      sortBy: 'date'
+    });
   };
 
-  // Check if any filters are active
   const hasActiveFilters = 
     selectedCategories.length > 0 ||
     selectedLocations.length > 0 ||
@@ -116,14 +125,12 @@ export default function SearchSidebar({ filters, setFilters }) {
     dateRange !== 'all' ||
     selectedRating !== '';
 
-  // Calculate percentage for price range slider
   const pricePercentage = (priceRange / 500) * 100;
 
   return (
     <aside className="w-64 bg-white border border-gray-200 rounded-lg p-6 h-fit shadow-sm">
       <h2 className="text-lg font-semibold text-gray-900 mb-6">Filters</h2>
       
-      {/* Categories */}
       <div className="mb-8">
         <h3 className="text-base font-semibold text-gray-900 mb-4">Categories</h3>
         <div className="space-y-3">
@@ -156,7 +163,6 @@ export default function SearchSidebar({ filters, setFilters }) {
         </div>
       </div>
 
-      {/* Locations */}
       <div className="mb-8">
         <h3 className="text-base font-semibold text-gray-900 mb-4">Locations</h3>
         <div className="space-y-3">
@@ -189,7 +195,6 @@ export default function SearchSidebar({ filters, setFilters }) {
         </div>
       </div>
 
-      {/* Price Range */}
       <div className="mb-8">
         <h3 className="text-base font-semibold text-gray-900 mb-4">Price Range</h3>
         <div className="px-1">
@@ -216,7 +221,6 @@ export default function SearchSidebar({ filters, setFilters }) {
         </div>
       </div>
 
-      {/* Date Range */}
       <div className="mb-8">
         <h3 className="text-base font-semibold text-gray-900 mb-4">Date Range</h3>
         <div className="relative">
@@ -235,7 +239,6 @@ export default function SearchSidebar({ filters, setFilters }) {
         </div>
       </div>
 
-      {/* Minimum Rating */}
       <div className="mb-6">
         <h3 className="text-base font-semibold text-gray-900 mb-4">Minimum Rating</h3>
         <div className="space-y-3">
@@ -267,7 +270,6 @@ export default function SearchSidebar({ filters, setFilters }) {
         </div>
       </div>
 
-      {/* Clear Filters Button */}
       <div className="pt-4 border-t border-gray-200">
         <button
           onClick={clearAllFilters}
