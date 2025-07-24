@@ -1,7 +1,7 @@
 const prisma = require('../prisma/client');
 
 exports.getAllEvents = async (req, res) => {
-  const { category, categories, location, locations, search, page = 1, limit = 12 } = req.query;
+  const { category, categories, location, locations, search, page = 1, limit = 6 } = req.query;
 
   const skip = (parseInt(page) - 1) * parseInt(limit);
   const pageLimit = parseInt(limit);
