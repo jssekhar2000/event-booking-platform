@@ -143,9 +143,9 @@ export default function MyEventsSection() {
             className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none bg-white min-w-[140px]"
           >
             <option value="">All Status</option>
-            <option value="approved">Approved</option>
-            <option value="pending">Pending</option>
-            <option value="rejected">Rejected</option>
+            <option value="APPROVED">Approved</option>
+            <option value="PENDING">Pending</option>
+            <option value="REJECTED">Rejected</option>
           </select>
         </div>
       </div>
@@ -156,15 +156,15 @@ export default function MyEventsSection() {
             <Plus className="w-8 h-8 text-gray-400" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {pagination.total === 0 ? 'No events yet' : 'No events found'}
+            {pagination.total === 0 && !searchTerm && !statusFilter ? 'No events yet' : 'No events found'}
           </h3>
           <p className="text-gray-600 mb-4">
-            {pagination.total === 0 
+            {pagination.total === 0 && !searchTerm && !statusFilter
               ? 'Create your first event to get started'
               : 'Try adjusting your search or filters'
             }
           </p>
-          {pagination.total === 0 && (
+          {pagination.total === 0 && !searchTerm && !statusFilter && (
             <button
               onClick={() => window.location.href = '/vendor/events/create'}
               className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
