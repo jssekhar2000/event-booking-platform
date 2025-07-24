@@ -12,30 +12,55 @@ exports.createEvent = async (req, res) => {
 
     const {
       title,
-      description,
+      shortDescription,
+      longDescription,
       date,
       location,
       category,
-      availableTickets
+      totalTickets,
+      availableTickets,
+      price,
+      originalPrice,
+      imageUrl,
+      mapUrl,
+      amenities = [],
+      tags = [],
+      restrictions = {
+        age: 'All Ages',
+        capacity: `${availableTickets} attendees`,
+        dressCode: 'Casual'
+      }
     } = req.body;
 
     const event = await prisma.event.create({
       data: {
         vendorId: vendor.id,
         title,
-        description,
+        shortDescription,
+        longDescription,
         date: new Date(date),
         location,
         category,
-        availableTickets: Number(availableTickets)
+        totalTickets: Number(totalTickets),
+        availableTickets: Number(availableTickets),
+        price: Number(price),
+        originalPrice: originalPrice ? Number(originalPrice) : null,
+        imageUrl,
+        mapUrl,
+        amenities,
+        tags,
+        restrictions: typeof restrictions === 'string' ? restrictions : JSON.stringify(restrictions),
+        status: 'PENDING',
       }
     });
 
     res.status(201).json(event);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Create Event Error:', err);
+    res.status(500).json({ error: err.message || 'Failed to create event' });
   }
 };
+
 
 exports.getVendorEvents = async (req, res) => {
   try {
@@ -115,15 +140,47 @@ exports.updateEvent = async (req, res) => {
       return res.status(403).json({ message: 'Not allowed to edit this event' });
     }
 
+    const {
+      title,
+      shortDescription,
+      longDescription,
+      date,
+      location,
+      category,
+      totalTickets,
+      availableTickets,
+      price,
+      originalPrice,
+      imageUrl,
+      mapUrl,
+      amenities = [],
+      tags = [],
+      restrictions = {
+        age: 'All Ages',
+        capacity: `${availableTickets} attendees`,
+        dressCode: 'Casual'
+      }
+    } = req.body;
+
     const updated = await prisma.event.update({
       where: { id: eventId },
       data: {
-        title: req.body.title,
-        description: req.body.description,
-        date: new Date(req.body.date),
-        location: req.body.location,
-        category: req.body.category,
-        availableTickets: req.body.availableTickets
+        title,
+        shortDescription,
+        longDescription,
+        date: new Date(date),
+        location,
+        category,
+        totalTickets: Number(totalTickets),
+        availableTickets: Number(availableTickets),
+        price: Number(price),
+        originalPrice: originalPrice ? Number(originalPrice) : null,
+        imageUrl,
+        mapUrl,
+        amenities,
+        tags,
+        restrictions: typeof restrictions === 'string' ? restrictions : JSON.stringify(restrictions),
+        updatedAt: new Date()
       }
     });
 
@@ -133,6 +190,7 @@ exports.updateEvent = async (req, res) => {
     res.status(500).json({ message: 'Failed to update event' });
   }
 };
+
 
 exports.deleteEvent = async (req, res) => {
   const userId = req.user.id;
