@@ -47,10 +47,14 @@ exports.bookEvent = async (req, res) => {
 };
 
 exports.getMyBookings = async (req, res) => {
-    const userId = req.user.id;
-  
-    try {
-      const bookings = await prisma.booking.findMany({
+  const userId = req.user.id;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 6;
+  const skip = (page - 1) * limit;
+
+  try {
+    const [bookings, totalBookings] = await Promise.all([
+      prisma.booking.findMany({
         where: { userId },
         include: {
           event: {
@@ -65,13 +69,61 @@ exports.getMyBookings = async (req, res) => {
         },
         orderBy: {
           bookingDate: 'desc'
-        }
-      });
+        },
+        skip: skip,
+        take: limit
+      }),
+      prisma.booking.count({
+        where: { userId }
+      })
+    ]);
 
-      res.json(bookings);
+    const totalPages = Math.ceil(totalBookings / limit);
+
+    res.json({
+      bookings,
+      currentPage: page,
+      totalPages: totalPages,
+      totalBookings: totalBookings
+    });
+  } catch (err) {
+    console.error('Get My Bookings Error:', err);
+    res.status(500).json({ message: 'Failed to fetch bookings' });
+  }
+};
+
+  exports.cancelBooking = async (req, res) => {
+    const userId = req.user.id;
+    const { bookingId } = req.body;
+  
+    try {
+      const booking = await prisma.booking.findUnique({
+        where: { id: bookingId },
+        include: { event: true }
+      });
+  
+      if (!booking) {
+        return res.status(404).json({ message: 'Booking not found' });
+      }
+  
+      if (booking.userId !== userId) {
+        return res.status(403).json({ message: 'You are not authorized to cancel this booking' });
+      }
+  
+      await prisma.event.update({
+        where: { id: booking.eventId },
+        data: { availableTickets: booking.event.availableTickets + 1 }
+      });
+  
+      await prisma.booking.delete({
+        where: { id: bookingId }
+      });
+  
+      res.status(200).json({ message: 'Booking cancelled successfully' });
+  
     } catch (err) {
-      console.error('Get My Bookings Error:', err);
-      res.status(500).json({ message: 'Failed to fetch bookings' });
+      console.error('Cancel Booking Error:', err);
+      res.status(500).json({ message: 'Failed to cancel booking' });
     }
   };
   

@@ -148,7 +148,7 @@ export default function LoginPage() {
 
         <div className="mt-6 text-center space-x-2">
           <button
-            onClick={() => setForm({ email: 'user@demo.com', password: '123456' })}
+            onClick={() => setForm({ email: 'sekhar_user@mailinator.com', password: 'Password@123' })}
             className="text-xs border border-gray-300 px-3 py-1 rounded hover:bg-gray-100"
           >
             User Demo
