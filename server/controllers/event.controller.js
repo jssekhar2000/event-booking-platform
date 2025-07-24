@@ -1,7 +1,7 @@
 const prisma = require('../prisma/client');
 
 exports.getAllEvents = async (req, res) => {
-  const { category, categories, location, locations, search, page = 1, limit = 6 } = req.query;
+  const { category, categories, location, locations, search, page = 1, limit = 12 } = req.query;
 
   const skip = (parseInt(page) - 1) * parseInt(limit);
   const pageLimit = parseInt(limit);
@@ -55,12 +55,20 @@ exports.getAllEvents = async (req, res) => {
         orderBy: { date: 'desc' },
         skip,
         take: pageLimit,
-        include: {
+        select: {
+          id: true,
+          title: true,
+          shortDescription: true,
+          date: true,
+          category: true,
+          location: true,
+          imageUrl: true,
+          price: true,
+          totalTickets: true,
+          availableTickets: true,
           vendor: {
-            include: {
-              user: {
-                select: { name: true, email: true }
-              }
+            select: {
+              vendorName: true
             }
           }
         }
