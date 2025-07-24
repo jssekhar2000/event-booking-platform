@@ -1,7 +1,17 @@
 const prisma = require('../prisma/client');
 
 exports.getAllEvents = async (req, res) => {
-  const { category, categories, location, locations, search, page = 1, limit = 6 } = req.query;
+  const { 
+    category, 
+    categories, 
+    location, 
+    locations, 
+    search, 
+    dateRange,
+    sortBy = 'date',
+    page = 1, 
+    limit = 6 
+  } = req.query;
 
   const skip = (parseInt(page) - 1) * parseInt(limit);
   const pageLimit = parseInt(limit);
@@ -19,40 +29,130 @@ exports.getAllEvents = async (req, res) => {
       ? [location] 
       : null;
 
-    const whereClause = {
-      ...(categoryFilter && categoryFilter.length > 0 && {
-        category: {
-          in: categoryFilter,
-          mode: 'insensitive'
-        }
-      }),
-      ...(locationFilter && locationFilter.length > 0 && {
-        location: {
-          in: locationFilter.map(loc => ({ contains: loc, mode: 'insensitive' }))
-        }
-      }),
-      ...(search && {
-        OR: [
-          { title: { contains: search, mode: 'insensitive' } },
-          { description: { contains: search, mode: 'insensitive' } },
-          { shortDescription: { contains: search, mode: 'insensitive' } }
-        ]
-      }),
+    const getDateRangeFilter = () => {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      
+      switch (dateRange) {
+        case 'today':
+          const endOfToday = new Date(today);
+          endOfToday.setDate(endOfToday.getDate() + 1);
+          return {
+            date: {
+              gte: today,
+              lt: endOfToday
+            }
+          };
+          
+        case 'this-week':
+          const startOfWeek = new Date(today);
+          startOfWeek.setDate(today.getDate() - today.getDay());
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 7);
+          return {
+            date: {
+              gte: startOfWeek,
+              lt: endOfWeek
+            }
+          };
+          
+        case 'this-month':
+          const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+          const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+          return {
+            date: {
+              gte: startOfMonth,
+              lt: endOfMonth
+            }
+          };
+          
+        case 'next-month':
+          const startOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+          const endOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 1);
+          return {
+            date: {
+              gte: startOfNextMonth,
+              lt: endOfNextMonth
+            }
+          };
+          
+        case 'all':
+        default:
+          return {};
+      }
     };
 
-    if (locationFilter && locationFilter.length > 0) {
-      whereClause.OR = whereClause.OR || [];
-      whereClause.OR.push(
-        ...locationFilter.map(loc => ({
-          location: { contains: loc, mode: 'insensitive' }
-        }))
-      );
+    const getSortOptions = () => {
+      switch (sortBy) {
+        case 'date':
+          return { date: 'asc' };
+        case 'price-low':
+          return { price: 'asc' };
+        case 'price-high':
+          return { price: 'desc' };
+        case 'popularity':
+          return [
+            { totalTickets: { sort: 'desc', nulls: 'last' } },
+            { date: 'asc' }
+          ];
+        case 'rating':
+          return { date: 'asc' };
+        default:
+          return { date: 'asc' };
+      }
+    };
+
+    let whereClause = {};
+
+    if (categoryFilter && categoryFilter.length > 0) {
+      whereClause.category = {
+        in: categoryFilter,
+        mode: 'insensitive'
+      };
     }
+
+    if (locationFilter && locationFilter.length > 0) {
+      if (locationFilter.length === 1) {
+        whereClause.location = {
+          contains: locationFilter[0],
+          mode: 'insensitive'
+        };
+      } else {
+        whereClause.OR = locationFilter.map(loc => ({
+          location: { contains: loc, mode: 'insensitive' }
+        }));
+      }
+    }
+
+    const dateFilter = getDateRangeFilter();
+    if (dateFilter.date) {
+      whereClause = { ...whereClause, ...dateFilter };
+    }
+
+    if (search) {
+      const searchConditions = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { shortDescription: { contains: search, mode: 'insensitive' } }
+      ];
+
+      if (whereClause.OR) {
+        whereClause.AND = [
+          { OR: whereClause.OR },
+          { OR: searchConditions }
+        ];
+        delete whereClause.OR;
+      } else {
+        whereClause.OR = searchConditions;
+      }
+    }
+
+    const sortOptions = getSortOptions();
 
     const [events, totalCount] = await Promise.all([
       prisma.event.findMany({
         where: whereClause,
-        orderBy: { date: 'desc' },
+        orderBy: Array.isArray(sortOptions) ? sortOptions : [sortOptions],
         skip,
         take: pageLimit,
         select: {
@@ -92,7 +192,6 @@ exports.getAllEvents = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch events' });
   }
 };
-
 
 
 exports.getEventById = async (req, res) => {
