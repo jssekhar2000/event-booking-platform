@@ -26,13 +26,20 @@ export default function EventPageClientWrapper({ event }) {
   console.log('Event:', event);
 
   const dateObj = useMemo(() => new Date(event.date), [event.date]);
-  const restrictions = useMemo(() => {
+  
+const restrictions = useMemo(() => {
+  if (typeof event.restrictions === 'object' && event.restrictions !== null) {
+    return event.restrictions;
+  }
+  if (typeof event.restrictions === 'string') {
     try {
-      return event.restrictions ? JSON.parse(event.restrictions) : {};
+      return JSON.parse(event.restrictions);
     } catch {
       return {};
     }
-  }, [event.restrictions]);
+  }
+  return {};
+}, [event.restrictions]);
 
   const formattedDate = useMemo(() => {
     return dateObj.toLocaleDateString('en-US', {
