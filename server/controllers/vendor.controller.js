@@ -40,6 +40,7 @@ exports.createEvent = async (req, res) => {
 exports.getVendorEvents = async (req, res) => {
   try {
     const userId = req.user.id;
+    const { search = '', status, page = 1, limit = 6 } = req.query;
 
     const vendor = await prisma.vendor.findUnique({
       where: { userId }
@@ -49,17 +50,46 @@ exports.getVendorEvents = async (req, res) => {
       return res.status(404).json({ message: 'Vendor profile not found' });
     }
 
-    const events = await prisma.event.findMany({
-      where: { vendorId: vendor.id },
-      orderBy: { date: 'asc' }
+    const filters = {
+      vendorId: vendor.id,
+      ...(status && { status }),
+      ...(search && {
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { shortDescription: { contains: search, mode: 'insensitive' } },
+          { longDescription: { contains: search, mode: 'insensitive' } }
+        ]
+      })
+    };
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const take = parseInt(limit);
+
+    const [events, total] = await Promise.all([
+      prisma.event.findMany({
+        where: filters,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take
+      }),
+      prisma.event.count({
+        where: filters
+      })
+    ]);
+
+    res.json({
+      events,
+      total,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(total / limit)
     });
 
-    res.json(events);
   } catch (err) {
-    console.error('Get Vendor Events Error:', err);
+    console.error(err);
     res.status(500).json({ message: 'Failed to fetch vendor events' });
   }
 };
+
 
 exports.updateEvent = async (req, res) => {
   const userId = req.user.id;
