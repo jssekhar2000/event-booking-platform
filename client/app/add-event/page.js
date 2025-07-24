@@ -3,22 +3,25 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from '@/lib/axios';
-import { 
-  ArrowLeft, 
-  Calendar, 
-  MapPin, 
-  Users, 
-  DollarSign, 
-  Image, 
-  Tag, 
+import {
+  ArrowLeft,
+  Calendar,
+  MapPin,
+  Users,
+  DollarSign,
+  Image,
+  Tag,
   Plus,
   X,
   Upload,
   Loader2
 } from 'lucide-react';
 
+import { useToast } from '@/components/Toast';
+
 export default function AddEditEventForm() {
   const router = useRouter();
+  const { showToast } = useToast();
   const searchParams = useSearchParams();
   const eventId = searchParams.get('id');
   const isEditMode = !!eventId;
@@ -77,9 +80,9 @@ export default function AddEditEventForm() {
       setError('');
       const response = await axios.get(`/events/${eventId}`);
       const eventData = response.data;
-      
+
       const formattedDate = eventData.date ? new Date(eventData.date).toISOString().slice(0, 16) : '';
-      
+
       setFormData({
         title: eventData.title || '',
         shortDescription: eventData.shortDescription || '',
@@ -98,7 +101,7 @@ export default function AddEditEventForm() {
         restrictions: eventData.restrictions || {}
       });
     } catch (err) {
-      console.error('Error fetching event data:', err);
+      console.error(err);
       setError(err.response?.data?.message || 'Failed to fetch event data');
     } finally {
       setIsLoading(false);
@@ -169,13 +172,11 @@ export default function AddEditEventForm() {
         response = await axios.post('/vendor/events', submitData);
       }
 
-      console.log('Event saved:', response.data);
-      
-      alert(`Event ${isEditMode ? 'updated' : 'created'} successfully!`);
-      router.push('/vendor/events');
-      
+      showToast(`Event ${isEditMode ? 'updated' : 'created'} successfully!`);
+      router.push('dashboard/vendor');
+
     } catch (err) {
-      console.error('Error saving event:', err);
+      console.error(err);
       setError(err.response?.data?.message || `Failed to ${isEditMode ? 'update' : 'create'} event`);
     } finally {
       setIsSubmitting(false);
@@ -197,7 +198,7 @@ export default function AddEditEventForm() {
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <button 
+          <button
             onClick={() => router.back()}
             className="flex items-center gap-2 text-purple-600 hover:text-purple-700 mb-4 transition-colors"
           >
@@ -221,7 +222,7 @@ export default function AddEditEventForm() {
         <div className="space-y-8">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Basic Information</h2>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="lg:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -232,7 +233,7 @@ export default function AddEditEventForm() {
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none"
                   placeholder="Enter event title"
                   required
                 />
@@ -247,7 +248,7 @@ export default function AddEditEventForm() {
                   name="shortDescription"
                   value={formData.shortDescription}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none"
                   placeholder="Brief description for event cards"
                   maxLength={150}
                   required
@@ -257,14 +258,14 @@ export default function AddEditEventForm() {
 
               <div className="lg:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Long Description *
+                  Full Description *
                 </label>
                 <textarea
                   name="longDescription"
                   value={formData.longDescription}
                   onChange={handleInputChange}
                   rows={5}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none"
                   placeholder="Detailed description of your event"
                   required
                 />
@@ -278,7 +279,7 @@ export default function AddEditEventForm() {
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none"
                   required
                 >
                   <option value="">Select a category</option>
@@ -292,7 +293,7 @@ export default function AddEditEventForm() {
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Date & Location</h2>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -304,7 +305,7 @@ export default function AddEditEventForm() {
                   name="date"
                   value={formData.date}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none"
                   required
                 />
               </div>
@@ -318,7 +319,7 @@ export default function AddEditEventForm() {
                   name="location"
                   value={formData.location}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none"
                   required
                 >
                   <option value="">Select a location</option>
@@ -337,7 +338,7 @@ export default function AddEditEventForm() {
                   name="mapUrl"
                   value={formData.mapUrl}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none"
                   placeholder="Google Maps or other map service URL"
                 />
               </div>
@@ -346,7 +347,7 @@ export default function AddEditEventForm() {
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Tickets & Pricing</h2>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -358,7 +359,7 @@ export default function AddEditEventForm() {
                   name="totalTickets"
                   value={formData.totalTickets}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none"
                   placeholder="Total number of tickets"
                   min="1"
                   required
@@ -374,7 +375,7 @@ export default function AddEditEventForm() {
                   name="availableTickets"
                   value={formData.availableTickets}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none"
                   placeholder="Currently available tickets"
                   min="0"
                   max={formData.totalTickets || undefined}
@@ -393,7 +394,7 @@ export default function AddEditEventForm() {
                   value={formData.price}
                   onChange={handleInputChange}
                   step="0.01"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none"
                   placeholder="0.00"
                   min="0"
                   required
@@ -410,7 +411,7 @@ export default function AddEditEventForm() {
                   value={formData.originalPrice}
                   onChange={handleInputChange}
                   step="0.01"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none"
                   placeholder="0.00"
                   min="0"
                 />
@@ -420,7 +421,7 @@ export default function AddEditEventForm() {
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Media</h2>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Image className="inline w-4 h-4 mr-1" />
@@ -432,7 +433,7 @@ export default function AddEditEventForm() {
                   name="imageUrl"
                   value={formData.imageUrl}
                   onChange={handleInputChange}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none"
                   placeholder="https://example.com/image.jpg"
                 />
                 <button
@@ -445,9 +446,9 @@ export default function AddEditEventForm() {
               </div>
               {formData.imageUrl && (
                 <div className="mt-3">
-                  <img 
-                    src={formData.imageUrl} 
-                    alt="Event preview" 
+                  <img
+                    src={formData.imageUrl}
+                    alt="Event preview"
                     className="w-32 h-20 object-cover rounded-lg border"
                     onError={(e) => {
                       e.target.style.display = 'none';
@@ -460,7 +461,7 @@ export default function AddEditEventForm() {
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Amenities & Tags</h2>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -471,7 +472,7 @@ export default function AddEditEventForm() {
                     type="text"
                     value={newAmenity}
                     onChange={(e) => setNewAmenity(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none"
                     placeholder="Add amenity"
                     onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addAmenity())}
                   />
@@ -512,7 +513,7 @@ export default function AddEditEventForm() {
                     type="text"
                     value={newTag}
                     onChange={(e) => setNewTag(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none"
                     placeholder="Add tag"
                     onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                   />

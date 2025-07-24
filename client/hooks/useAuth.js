@@ -1,4 +1,3 @@
-// hooks/useAuth.js
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
@@ -10,7 +9,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // load token + user from localStorage
     const storedToken = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
 

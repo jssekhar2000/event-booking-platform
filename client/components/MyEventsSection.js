@@ -76,6 +76,7 @@ export default function MyEventsSection() {
       setEvents(prev => prev.filter(event => event.id !== deleteModal.event.id));
       setPagination(prev => ({ ...prev, total: Math.max(0, prev.total - 1) }));
       setDeleteModal({ isOpen: false, event: null });
+      window.location.reload()
       showToast('Event deleted successfully', 'success');
     } catch (error) {
       showToast('Failed to delete event', 'error');

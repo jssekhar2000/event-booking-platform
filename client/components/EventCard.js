@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 export default function EventCard({ event }) {
   const [imgError, setImgError] = useState(false);
-  const fallbackImage = categoryImages[event?.category] || categoryImages.default
+  const fallbackImage = categoryImages?.[event?.category] || categoryImages.default
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer group flex flex-col">

@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { categoryImages } from '@/lib/constants';
 import { useState } from 'react';
 
-export default function VendorEventCard({ event, onEdit, onDelete }) {
+export default function VendorEventCard({ event, onDelete }) {
   const [imgError, setImgError] = useState(false);
-  const fallbackImage = categoryImages[event?.category] || categoryImages.default;
+  const fallbackImage = categoryImages?.[event?.category] || categoryImages.default;
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -96,14 +96,14 @@ export default function VendorEventCard({ event, onEdit, onDelete }) {
               View
             </button>
           </Link>
-
-          <button
-            onClick={() => onEdit(event)}
-            className="flex-1 flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm rounded-lg py-2 px-3 font-medium transition-colors"
-          >
+          <Link href={`/add-event?id=${event.id}`}>
+            <button
+              className="flex-1 flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm rounded-lg py-2 px-3 font-medium transition-colors"
+            >
             <Edit className="w-4 h-4" />
             Edit
           </button>
+          </Link>
 
           <button
             onClick={() => onDelete(event)}
