@@ -68,7 +68,10 @@ exports.getVendorEvents = async (req, res) => {
     const [events, total] = await Promise.all([
       prisma.event.findMany({
         where: filters,
-        orderBy: { createdAt: 'desc' },
+        orderBy: [
+          { createdAt: 'desc' },
+          { id: 'desc' }
+        ],
         skip,
         take
       }),
