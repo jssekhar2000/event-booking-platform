@@ -92,7 +92,7 @@ exports.getAllEvents = async (req, res) => {
           return { price: 'desc' };
         case 'popularity':
           return [
-            { totalTickets: { sort: 'desc', nulls: 'last' } },
+            { totalTickets: 'desc' },
             { date: 'asc' }
           ];
         case 'rating':
@@ -129,11 +129,10 @@ exports.getAllEvents = async (req, res) => {
       whereClause = { ...whereClause, ...dateFilter };
     }
 
-    if (search) {
+    if (search && search.trim()) {
       const searchConditions = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-        { shortDescription: { contains: search, mode: 'insensitive' } }
+        { title: { contains: search.trim(), mode: 'insensitive' } },
+        { shortDescription: { contains: search.trim(), mode: 'insensitive' } }
       ];
 
       if (whereClause.OR) {
@@ -192,7 +191,6 @@ exports.getAllEvents = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch events' });
   }
 };
-
 
 exports.getEventById = async (req, res) => {
     const eventId = parseInt(req.params.id);
