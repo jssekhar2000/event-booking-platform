@@ -21,6 +21,8 @@ model User {
   role     Role
   vendor   Vendor?
   bookings Booking[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 }
 
 model Vendor {

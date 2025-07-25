@@ -79,6 +79,11 @@ exports.getAllUsersAdmin = async (req, res) => {
       skip,
       take: limit,
       orderBy: { createdAt: 'asc' },
+      where: {
+        NOT: {
+          role: 'ADMIN'
+        }
+      },
       select: {
         id: true,
         name: true,
@@ -86,29 +91,54 @@ exports.getAllUsersAdmin = async (req, res) => {
         role: true,
         vendor: {
           select: {
-            id: true,
             vendorName: true,
-            events: {
-              select: { id: true, title: true }
+            _count: {
+              select: {
+                events: true
+              }
             }
           }
         },
-        bookings: {
+
+
+        _count: {
           select: {
-            id: true,
-            event: {
-              select: { id: true, title: true }
-            }
+            bookings: true
           }
         }
       }
     });
 
-    const totalUsers = await prisma.user.count();
+    console.log(users)
+
+    const totalUsers = await prisma.user.count({
+      where: {
+        NOT: {
+          role: 'ADMIN'
+        }
+      }
+    });
     const totalPages = Math.ceil(totalUsers / limit);
 
+    const formattedUsers = users.map(user => {
+      const userData = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      };
+
+      if (user.role === 'VENDOR' && user.vendor) {
+        userData.vendorName = user.vendor.vendorName;
+        userData.eventsCount = user.vendor._count.events;
+      } else if (user.role === 'USER') {
+        userData.bookingsCount = user._count.bookings;
+      }
+      return userData;
+    });
+
     res.json({
-      users,
+      users: formattedUsers,
       currentPage: page,
       totalPages,
       totalUsers,
