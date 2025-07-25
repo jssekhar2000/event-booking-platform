@@ -56,7 +56,7 @@ export default function UserDashboard() {
         totalBookings: totalBookings || 0,
       });
 
-      const upcomingCount = (fetchedBookings || []).filter(b => {
+      const upcomingCount = ([...bookings,...fetchedBookings]|| []).filter(b => {
         const eventDate = new Date(b.event.date);
         const now = new Date();
         now.setHours(0, 0, 0, 0);
