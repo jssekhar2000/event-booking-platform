@@ -45,16 +45,14 @@ export default function AdminDashboard() {
   const fetchDashboardStats = async () => {
     try {
       setDashboardStats(prev => ({ ...prev, loadingStats: true }));
-      const [pendingEventsRes, usersRes] = await Promise.all([
-        axios.get('/admin/events'),
-        axios.get('/admin/users'),
-      ]);
+      const response = await axios.get('/admin/dashboard-metrics');
+      const { totalUsers, totalEvents, totalRevenue, pendingApprovals } = response.data;
 
       setDashboardStats({
-        totalUsers: usersRes.data.totalUsers || 0,
-        totalEvents: 1234,
-        totalRevenue: '$485,930',
-        pendingApprovals: pendingEventsRes.data.totalEvents || 0,
+        totalUsers: totalUsers || 0,
+        totalEvents: totalEvents || 0,
+        totalRevenue: `$${(totalRevenue || 0).toLocaleString()}`,
+        pendingApprovals: pendingApprovals || 0,
         loadingStats: false,
       });
     } catch (err) {
@@ -160,9 +158,9 @@ export default function AdminDashboard() {
         pendingApprovals: Math.max(0, prev.pendingApprovals - 1),
       }));
 
-      if (pendingEvents?.length === 1 && eventPagination.currentPage > 1) {
+      if (pendingEvents.length === 1 && eventPagination.currentPage > 1) {
         fetchPendingEvents(eventPagination.currentPage - 1, false);
-      } else if (pendingEvents?.length === 1 && eventPagination.currentPage === 1 && eventPagination.totalEvents > 1) {
+      } else if (pendingEvents.length === 1 && eventPagination.currentPage === 1 && eventPagination.totalEvents > 1) {
         fetchPendingEvents(1, false);
       }
 
@@ -174,7 +172,7 @@ export default function AdminDashboard() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
       <div className="max-w-3xl mx-auto">
-        <DashboardHeader role="Admin" name={user?.name} />
+        <DashboardHeader role="Admin" email={user?.email} />
 
         <div className="grid md:grid-cols-4 gap-4">
           <DashboardCard
@@ -242,7 +240,7 @@ export default function AdminDashboard() {
                 <div key={i} className="bg-gray-200 rounded-xl h-40 animate-pulse"></div>
               ))}
             </div>
-          ) : users?.length === 0 ? (
+          ) : users.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 rounded-lg">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 text-gray-400 mx-auto mb-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.672.825 8.8 8.8 0 0 1 1.454-.672m-1.454.672v-.547m0 0a9.38 9.38 0 0 0-2.672-.825c-.234 0-.466-.02-.69-.059a11.124 11.124 0 0 0 1.29-1.377L19.5 7.75m-3.75 5.25v-.547m0 0a9.38 9.38 0 0 0 2.672-.825c-.234 0-.466-.02-.69-.059a11.124 11.124 0 0 0 1.29-1.377L19.5 7.75m-3.75 5.25c.086.088.17.178.254.265M19.5 7.75l-1.5-1.5m-3.75 5.25L12 18.75V15" />
@@ -278,7 +276,7 @@ export default function AdminDashboard() {
               )}
               {userPagination.totalUsers > 0 && (
                 <div className="text-center mt-4 text-sm text-gray-500">
-                  Showing {users?.length} of {userPagination.totalUsers} users
+                  Showing {users.length} of {userPagination.totalUsers} users
                 </div>
               )}
             </>
@@ -295,7 +293,7 @@ export default function AdminDashboard() {
                 <div key={i} className="bg-gray-200 rounded-xl h-80 animate-pulse"></div>
               ))}
             </div>
-          ) : pendingEvents?.length === 0 ? (
+          ) : pendingEvents.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 rounded-lg">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 text-gray-400 mx-auto mb-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.133-.653-2.227-1.607-2.733L12.75 3.03a1.125 1.125 0 0 0-1.5 0L3.354 3.375C2.4 3.882 1.75 4.976 1.75 6.108V19.5A2.25 2.25 0 0 0 4 21.75h4.75m-9-6V10.5h10.5V15m-10.5 6l2.25-3 2.25 3m-4.5-6h3.75" />
