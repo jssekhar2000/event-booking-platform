@@ -148,3 +148,50 @@ exports.getAllUsersAdmin = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch users' });
   }
 };
+
+exports.getDashboardMetrics = async (req, res) => {
+  try {
+    const [
+      totalUsersCount,
+      activeEventsCount,
+      totalRevenueResult,
+      pendingEventsCount
+    ] = await Promise.all([
+      prisma.user.count({
+        where: {
+          NOT: {
+            role: 'ADMIN'
+          }
+        }
+      }),
+      prisma.event.count({
+        where: {
+          status: 'APPROVED'
+        }
+      }),
+      prisma.booking.aggregate({
+        _sum: {
+          price: true,
+        },
+      }),
+      prisma.event.count({
+        where: {
+          status: 'PENDING'
+        }
+      })
+    ]);
+
+    const totalRevenue = totalRevenueResult._sum.price || 0;
+
+    res.json({
+      totalUsers: totalUsersCount,
+      totalEvents: activeEventsCount,
+      totalRevenue: totalRevenue,
+      pendingApprovals: pendingEventsCount,
+    });
+
+  } catch (err) {
+    console.error('Admin Get Dashboard Metrics Error:', err);
+    res.status(500).json({ message: 'Failed to load dashboard metrics' });
+  }
+};

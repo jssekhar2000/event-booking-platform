@@ -160,7 +160,7 @@ export default function LoginPage() {
             Vendor Demo
           </button>
           <button
-            onClick={() => setForm({ email: 'admin@demo.com', password: '123456' })}
+            onClick={() => setForm({ email: 'sekhar_admin@mailinator.com', password: 'Password@123' })}
             className="text-xs border border-gray-300 px-3 py-1 rounded hover:bg-gray-100"
           >
             Admin Demo
