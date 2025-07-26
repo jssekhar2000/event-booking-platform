@@ -4,18 +4,11 @@ import EventCard from '@/components/EventCard';
 import { Grid, List, ChevronDown, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import Loader from '@/components/Loader';
+import { sortOptions } from '@/lib/constants';
 
 export default function SearchResults({ events, loading, pagination, onPageChange, filters, onFiltersChange }) {
   const [viewMode, setViewMode] = useState('grid');
   const [showSortDropdown, setShowSortDropdown] = useState(false);
-
-  const sortOptions = [
-    { value: 'date', label: 'Date' },
-    { value: 'price-low', label: 'Price: Low to High' },
-    { value: 'price-high', label: 'Price: High to Low' },
-    { value: 'popularity', label: 'Popularity' },
-    { value: 'rating', label: 'Rating' }
-  ];
 
   const getCurrentSortLabel = () => {
     return sortOptions.find(option => option.value === filters?.sortBy)?.label || 'Date';

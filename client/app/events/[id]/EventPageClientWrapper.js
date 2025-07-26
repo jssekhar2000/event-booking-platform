@@ -23,8 +23,6 @@ export default function EventPageClientWrapper({ event }) {
   const [imageError, setImageError] = useState(false);
   const fallbackImage = categoryImages?.[event?.category] || categoryImages.default
 
-  console.log('Event:', event);
-
   const dateObj = useMemo(() => new Date(event.date), [event.date]);
   
 const restrictions = useMemo(() => {

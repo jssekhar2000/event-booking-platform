@@ -28,4 +28,27 @@ export const eventCategories = [
     { value: 'Chicago', label: 'Chicago' },
     { value: 'Austin', label: 'Austin' },
   ];
+
+  export const sortOptions = [
+    { value: 'date', label: 'Date' },
+    { value: 'price-low', label: 'Price: Low to High' },
+    { value: 'price-high', label: 'Price: High to Low' },
+    { value: 'popularity', label: 'Popularity' },
+    { value: 'rating', label: 'Rating' }
+  ];
+
+  export const ratingOptions = [
+    { value: '4+', label: '4+ Stars' },
+    { value: '3+', label: '3+ Stars' },
+    { value: '2+', label: '2+ Stars' },
+    { value: '1+', label: '1+ Stars' }
+  ];
+
+  export const dateOptions = [
+    { value: 'all', label: 'All Dates' },
+    { value: 'today', label: 'Today' },
+    { value: 'this-week', label: 'This Week' },
+    { value: 'this-month', label: 'This Month' },
+    { value: 'next-month', label: 'Next Month' }
+  ];
   

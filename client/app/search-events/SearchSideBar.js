@@ -2,39 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
-
-const eventCategories = [
-  { value: 'music', label: 'Music' },
-  { value: 'technology', label: 'Technology' },
-  { value: 'food-drink', label: 'Food & Drink' },
-  { value: 'arts-culture', label: 'Arts & Culture' },
-  { value: 'sports', label: 'Sports' },
-  { value: 'business', label: 'Business' }
-];
-
-const eventLocations = [
-  { value: 'new-york', label: 'New York' },
-  { value: 'san-francisco', label: 'San Francisco' },
-  { value: 'los-angeles', label: 'Los Angeles' },
-  { value: 'miami', label: 'Miami' },
-  { value: 'chicago', label: 'Chicago' },
-  { value: 'austin', label: 'Austin' }
-];
-
-const ratingOptions = [
-  { value: '4+', label: '4+ Stars' },
-  { value: '3+', label: '3+ Stars' },
-  { value: '2+', label: '2+ Stars' },
-  { value: '1+', label: '1+ Stars' }
-];
-
-const dateOptions = [
-  { value: 'all', label: 'All Dates' },
-  { value: 'today', label: 'Today' },
-  { value: 'this-week', label: 'This Week' },
-  { value: 'this-month', label: 'This Month' },
-  { value: 'next-month', label: 'Next Month' }
-];
+import { eventCategories, eventLocations, ratingOptions, dateOptions } from '@/lib/constants';
 
 export default function SearchSidebar({ filters, setFilters }) {
   const [selectedCategories, setSelectedCategories] = useState(filters?.categories || []);

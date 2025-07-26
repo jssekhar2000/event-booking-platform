@@ -172,7 +172,7 @@ export default function AdminDashboard() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
       <div className="max-w-3xl mx-auto">
-        <DashboardHeader role="Admin" email={user?.email} />
+        <DashboardHeader role="Admin" name={user?.name} />
 
         <div className="grid md:grid-cols-4 gap-4">
           <DashboardCard

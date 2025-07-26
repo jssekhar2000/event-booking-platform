@@ -10,7 +10,7 @@ export default function ShareModal({ isOpen, onClose, event }) {
 
   const facebookShare = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
   const twitterShare = `https://twitter.com/intent/tweet?text=${encodeURIComponent(event.title)}&url=${encodeURIComponent(shareUrl)}`;
-  const instagramShare = '#'; // Instagram doesn't support direct sharing via URL
+  const instagramShare = '#';
 
   return (
     <AnimatePresence>
