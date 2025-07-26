@@ -9,9 +9,7 @@ The goal of this project is to enable:
 
 ---
 
-## 🚀 Live Preview (Optional)
-
-> If you've deployed this on Vercel, you can add the link below:
+## 🚀 Live Preview
 
 [🔗 Live Demo](https://multi-vendor-event-booking-platform.vercel.app/)
 
